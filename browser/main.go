@@ -25,6 +25,8 @@ func main() {
 
 type ScreenshotParams struct {
 	Url string `json:"url" jsonschema:"url of the webpage"`
+	// Width int `json:"width" jsonschema:"width of the browser window"`
+	// Height int `json:"height" jsonschema:"height of the browser window"`
 }
 
 var ScreenshotTool = mcp.Tool{
@@ -35,19 +37,17 @@ var ScreenshotTool = mcp.Tool{
 type ScreenshotResult struct {}
 
 func Screenshot(ctx context.Context, ss *mcp.ServerSession, params *mcp.CallToolParamsFor[ScreenshotParams]) (*mcp.CallToolResultFor[ScreenshotResult], error) {
-	// ctx, cancel := chromedp.NewExecAllocator(ctx, chromedp.WindowSize(1920, 1080))
-	// defer cancel()
-
-	ctx, cancel := chromedp.NewContext(ctx)
+	ctx, cancel := context.WithTimeout(ctx, time.Second * 15)
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, time.Second * 15)
+	ctx, cancel = chromedp.NewContext(ctx)
 	defer cancel()
 
 	var image []byte
 
 	err := chromedp.Run(ctx, chromedp.Tasks{
 		chromedp.Navigate(params.Arguments.Url),
+		chromedp.EmulateViewport(1920, 1080),
 		WaitForRequests(time.Millisecond * 1000),
 		chromedp.FullScreenshot(&image, 90),
 	})
