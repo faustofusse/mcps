@@ -16,9 +16,6 @@ func main() {
 
 	mcp.AddTool(server, &ScreenshotTool, Screenshot)
 
-	// handler := func(r *http.Request) *mcp.Server { return server }
-	// http.ListenAndServe(":8080", mcp.NewStreamableHTTPHandler(handler, nil))
-
 	err := server.Run(ctx, mcp.NewStdioTransport())
 	if err != nil { panic(err) }
 }
